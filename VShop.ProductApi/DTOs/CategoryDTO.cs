@@ -14,4 +14,3 @@ namespace VShop.ProductApi.DTOs
         public ICollection<Product>? Products { get; set; }
     }
 }
-}
