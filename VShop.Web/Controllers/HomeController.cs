@@ -28,6 +28,17 @@ namespace VShop.Web.Controllers
             return View(result);
         }
 
+        [HttpGet]
+        public async Task<ActionResult<ProductViewModel>> ProductDetails(int id)
+        {
+            var result = await _productService.FindProductById(id, string.Empty);
+
+            if (result is null)
+                return View("Error");
+
+            return View(result);
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
