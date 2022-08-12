@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using VShop.DiscountApi.Context;
 using VShop.DiscountApi.Repositories;
@@ -59,6 +60,27 @@ builder.Services.AddCors(options =>
                           .AllowAnyHeader());
 });
 
+builder.Services.AddAuthentication("Bearer")
+       .AddJwtBearer("Bearer", options =>
+       {
+           options.Authority =
+             builder.Configuration["VShop.IdentityServer:ApplicationUrl"];
+
+           options.TokenValidationParameters = new TokenValidationParameters
+           {
+               ValidateAudience = false
+           };
+       });
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("ApiScope", policy =>
+    {
+        policy.RequireAuthenticatedUser();
+        policy.RequireClaim("scope", "vshop");
+    });
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -71,6 +93,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseCors("CorsPolicy");
+
+app.UseAuthorization();
 
 app.UseAuthorization();
 
